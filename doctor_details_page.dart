@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
 class DoctorDetailsPage extends StatelessWidget {
+  final int doctorId;
   final String name;
   final String specialty;
   final String availability;
 
   const DoctorDetailsPage({
     super.key,
+    required this.doctorId,
     required this.name,
     required this.specialty,
     required this.availability,
@@ -16,7 +18,6 @@ class DoctorDetailsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF1F9F8),
-
       appBar: AppBar(
         backgroundColor: const Color(0xFF00897B),
         title: const Text(
@@ -26,7 +27,6 @@ class DoctorDetailsPage extends StatelessWidget {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -34,12 +34,11 @@ class DoctorDetailsPage extends StatelessWidget {
           children: [
             const SizedBox(height: 10),
 
-            CircleAvatar(
+            const CircleAvatar(
               radius: 55,
-              backgroundColor: const Color(0xFF00897B),
-              child: const Icon(Icons.person, size: 60, color: Colors.white),
+              backgroundColor: Color(0xFF00897B),
+              child: Icon(Icons.person, size: 60, color: Colors.white),
             ),
-
             const SizedBox(height: 20),
 
             Text(
@@ -57,8 +56,6 @@ class DoctorDetailsPage extends StatelessWidget {
               specialty,
               style: const TextStyle(fontSize: 18, color: Colors.black54),
             ),
-
-            // Availability card
             Container(
               padding: const EdgeInsets.all(15),
               margin: const EdgeInsets.only(top: 20),
@@ -94,21 +91,18 @@ class DoctorDetailsPage extends StatelessWidget {
                 ],
               ),
             ),
-
             const Spacer(),
 
-            // Button
             ElevatedButton(
               onPressed: () {
                 Navigator.pushNamed(
                   context,
                   '/book',
-                  arguments: {"name": name, "specialty": specialty},
+                  arguments: {"doctor_id": doctorId, "doctor_name": name},
                 );
               },
-              child: const Text("Book Appointment"),
+              child: const Text("Book Apointment"),
             ),
-
             const SizedBox(height: 25),
           ],
         ),

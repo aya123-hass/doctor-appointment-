@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:doctor_appointments/screens/doctor_details_page.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,41 +11,46 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  //doctors
-  List<Map<String, String>> doctors = [
-    {
-      "name": "Dr. John Doe",
-      "specialty": "Cardiologist",
-      "availability": "Mon - Fri • 9:00 AM - 3:00 PM",
-    },
-    {
-      "name": "Dr. Sarah Ali",
-      "specialty": "Dentist",
-      "availability": "Tue - Sat • 10:00 AM - 5:00 PM",
-    },
-    {
-      "name": "Dr. Adam Smith",
-      "specialty": "Neurologist",
-      "availability": "Everyday • 12:00 PM - 8:00 PM",
-    },
-    {
-      "name": "Dr. Lina Haddad",
-      "specialty": "Dermatologist",
-      "availability": "Mon - Thu • 11:00 AM - 6:00 PM",
-    },
-  ];
-
+  List<dynamic> doctors = [];
+  bool isLoading = true;
   String searchQuery = "";
+
+  final String apiUrl = "http://localhost:3000/doctors";
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDoctors();
+  }
+
+  Future<void> fetchDoctors() async {
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          doctors = data["data"];
+          isLoading = false;
+        });
+      } else {
+        throw Exception("Failed to load doctors");
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF1F9F8),
-
       appBar: AppBar(
-        backgroundColor: const Color(0xFF00897B),
+        backgroundColor: const Color(0xFFF1F9F8),
         title: const Text(
-          "Doctor Appointments",
+          "Doctor Apoointments",
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -57,7 +64,6 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // Search Bar
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
@@ -84,28 +90,33 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
 
-            // Doctor Cards
             Expanded(
-              child: ListView(
-                children: doctors
-                    .where(
-                      (doc) =>
-                          doc["name"]!.toLowerCase().contains(searchQuery) ||
-                          doc["specialty"]!.toLowerCase().contains(searchQuery),
-                    )
-                    .map(
-                      (doc) => doctorCard(
-                        context,
-                        doc["name"]!,
-                        doc["specialty"]!,
-                        doc["availability"]!,
-                      ),
-                    )
-                    .toList(),
-              ),
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : ListView(
+                      children: doctors
+                          .where(
+                            (doc) =>
+                                doc["name"].toLowerCase().contains(
+                                  searchQuery,
+                                ) ||
+                                doc["specialty"].toLowerCase().contains(
+                                  searchQuery,
+                                ),
+                          )
+                          .map(
+                            (doc) => doctorCard(
+                              context,
+                              doc["id"],
+                              doc["name"],
+                              doc["specialty"],
+                              doc["availability"],
+                            ),
+                          )
+                          .toList(),
+                    ),
             ),
           ],
         ),
@@ -115,6 +126,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget doctorCard(
     BuildContext context,
+    int doctorId,
     String name,
     String specialty,
     String availability,
@@ -134,18 +146,15 @@ class _HomePageState extends State<HomePage> {
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.all(15),
-
-        leading: CircleAvatar(
+        leading: const CircleAvatar(
           radius: 30,
-          backgroundColor: const Color(0xFF00897B),
-          child: const Icon(Icons.person, color: Colors.white, size: 30),
+          backgroundColor: Color(0xFF00897B),
+          child: Icon(Icons.person, color: Colors.white, size: 30),
         ),
-
         title: Text(
           name,
           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -159,22 +168,18 @@ class _HomePageState extends State<HomePage> {
                   color: Color(0xFF00897B),
                 ),
                 const SizedBox(width: 5),
-                Text(
-                  availability,
-                  style: const TextStyle(fontSize: 13, color: Colors.black87),
-                ),
+                Text(availability, style: const TextStyle(fontSize: 13)),
               ],
             ),
           ],
         ),
-
         trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
-
         onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => DoctorDetailsPage(
+                doctorId: doctorId,
                 name: name,
                 specialty: specialty,
                 availability: availability,

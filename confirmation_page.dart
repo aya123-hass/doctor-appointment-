@@ -5,15 +5,6 @@ class ConfirmationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as Map;
-
-    String doctorName = args["doctorName"];
-    String specialty = args["specialty"];
-    String patientName = args["patientName"];
-    String phone = args["phone"];
-    DateTime date = args["date"];
-    TimeOfDay time = args["time"];
-
     return Scaffold(
       backgroundColor: const Color(0xFFF1F9F8),
       appBar: AppBar(
@@ -24,15 +15,13 @@ class ConfirmationPage extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(25),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const SizedBox(height: 30),
+            const SizedBox(height: 40),
 
-            // Check icon
             Container(
               padding: const EdgeInsets.all(25),
               decoration: BoxDecoration(
@@ -45,11 +34,11 @@ class ConfirmationPage extends StatelessWidget {
                 size: 90,
               ),
             ),
-
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
 
             const Text(
               "Your Appointment is Confirmed!",
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -57,48 +46,11 @@ class ConfirmationPage extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 30),
-
-            // Doctor Info Card
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    doctorName,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  Text(
-                    specialty,
-                    style: const TextStyle(fontSize: 16, color: Colors.grey),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  infoRow(Icons.person, "Patient: $patientName"),
-                  infoRow(Icons.phone, "Phone: $phone"),
-                  infoRow(
-                    Icons.calendar_today,
-                    "Date: ${date.day}/${date.month}/${date.year}",
-                  ),
-                  infoRow(Icons.access_time, "Time: ${time.format(context)}"),
-                ],
-              ),
+            const SizedBox(height: 15),
+            const Text(
+              "Thank you for booking your appointment.\nWe look forward to seeing you!",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16, color: Colors.black54),
             ),
 
             const Spacer(),
@@ -117,19 +69,6 @@ class ConfirmationPage extends StatelessWidget {
             const SizedBox(height: 30),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget infoRow(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Row(
-        children: [
-          Icon(icon, color: Color(0xFF00897B)),
-          const SizedBox(width: 10),
-          Text(text, style: const TextStyle(fontSize: 16)),
-        ],
       ),
     );
   }
